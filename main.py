@@ -67,6 +67,33 @@ def main_worker(args):
     if args.pretrained:
         pretrained(args, model)
 
+        # Assuming args.pretrained points to your .pt file
+        pretrained_path = "resnet18_fine_tuned_CIFAR10.pt"
+
+        # Load the pre-trained model weights
+        if os.path.isfile(pretrained_path):
+            print(f"=> loading pretrained model from '{pretrained_path}'")
+            pretrained_dict = torch.load(pretrained_path)
+
+            # Assuming the .pt file contains only the state_dict
+            if 'state_dict' in pretrained_dict:
+                pretrained_dict = pretrained_dict['state_dict']
+
+            model_dict = model.state_dict()
+
+            # Filter out unnecessary keys
+            pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
+
+            # Overwrite entries in the existing state dict
+            model_dict.update(pretrained_dict)
+
+            # Load the new state dict into the model
+            model.load_state_dict(model_dict)
+
+            print("=> loaded pretrained model")
+        else:
+            print(f"=> no pretrained model found at '{pretrained_path}'")
+
     optimizer = get_optimizer(args, model)
     data, train_augmentation = get_dataset(args)
     lr_policy = get_policy(args.lr_policy)(optimizer, args)
