@@ -73,11 +73,15 @@ def main_worker(args):
     # Load the pre-trained model weights
     if os.path.isfile(pretrained_path):
         print(f"=> loading pretrained model from '{pretrained_path}'")
-        pretrained_dict = torch.load(pretrained_path)
+        #pretrained_dict = torch.load(pretrained_path)
+        pretrained_model = torch.load(pretrained_path)
+
+        # Extract the state_dict from the loaded model
+        pretrained_dict = pretrained_model.state_dict()
 
         # Assuming the .pt file contains only the state_dict
-        if 'state_dict' in pretrained_dict:
-            pretrained_dict = pretrained_dict['state_dict']
+        #if 'state_dict' in pretrained_dict:
+        #    pretrained_dict = pretrained_dict['state_dict']
 
         model_dict = model.state_dict()
 
